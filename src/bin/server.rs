@@ -1,4 +1,4 @@
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder, middleware::Logger};
 use url_shorter::{add_entry, establish_connection, get_all_entries, get_entry, models::UrlEntry};
 
 #[get("/api/all")]
@@ -45,11 +45,14 @@ async fn create_url(path: web::Path<String>) -> impl Responder {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    std::env::set_var("RUST_LOG", "info,actix_web=error");
+
     HttpServer::new(move || {
         App::new()
             .service(create_url)
             .service(get_post)
             .service(get_all)
+            .wrap(Logger::default())
     })
     .bind("127.0.0.1:8080")?
     .run()
