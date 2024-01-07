@@ -1,7 +1,7 @@
 use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
 use url_shorter::{add_entry, establish_connection, get_all_entries, get_entry, models::UrlEntry};
 
-#[get("/api")]
+#[get("/api/all")]
 async fn get_all() -> impl Responder {
     let connection = &mut establish_connection();
     let results: Vec<UrlEntry> = get_all_entries(connection);
@@ -14,7 +14,7 @@ async fn get_all() -> impl Responder {
     HttpResponse::Ok().body(together)
 }
 
-#[get("/addr/{new_address}")]
+#[get("/api/addr/{new_address}")]
 async fn get_post(path: web::Path<String>) -> impl Responder {
     let short_url = path.into_inner();
     let short_url = String::from("sho.rt/") + &short_url;
@@ -29,7 +29,7 @@ async fn get_post(path: web::Path<String>) -> impl Responder {
     }
 }
 
-#[post("/addr/{new_addr}")]
+#[post("/api/new/{new_addr}")]
 async fn create_url(path: web::Path<String>) -> impl Responder {
     let long_url = path.into_inner();
     let connection = &mut establish_connection();
